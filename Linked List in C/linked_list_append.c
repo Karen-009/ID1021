@@ -41,6 +41,27 @@ void add (linked *lnk, int item){
     lnk -> first = new_cell;
 }
 
+void linked_append(linked *a, linked *b) {
+    if (b->first == NULL) {
+        return;
+    }
+
+    cell *nxt = a->first;
+    cell *prv = NULL;
+    while(nxt != NULL) {
+        prv = nxt;
+        nxt = nxt->tail;
+    }
+
+    if (prv != NULL){
+        prv -> tail = b -> first;
+    } else {
+        a -> first = b ->first;
+    }
+
+    b->first = NULL;
+    }
+
 void printList(linked* list){
     cell* current = list -> first;
     while (current != NULL)
@@ -52,36 +73,36 @@ void printList(linked* list){
     
 }
 
-linked *linked_init(int n) {
-    linked *a = linked_create();
-    for (int i = 0; i < n; i++) {
-        add(a, i);
-    }
-    return a;
-}
-
-int main (){
+int main (){ // the constant sizee was 10
 struct timespec t_start, t_stop;
 long total_time = 0;
-
-linked *list = linked_create();
 int iterations = 1000;
+int array_a_length = 10;
+int array_b_length = 400;
 
-add(list, 4);
-add(list, 9);
-add(list, 14);
 for (size_t i = 0; i < iterations; i++)
 {
+    linked *list1 = linked_create();
+        for (size_t j = 0; j < array_a_length; j++) {
+            add(list1, 20);
+        }
+    linked *list2 = linked_create();
+
+    for (size_t j = 0; j < array_b_length; j++) {
+        add(list2, 13);
+    }
+
     clock_gettime(CLOCK_MONOTONIC, &t_start);
-    add(list, 20);
+    linked_append(list1, list2);
     clock_gettime(CLOCK_MONOTONIC, &t_stop);
     long wall = nano_seconds(&t_start, &t_stop);
     total_time += wall;
-
+    linked_free(list1);
+    linked_free(list2);
 }
+
 long average_time = total_time / iterations;
 printf("Average time: %ld ns\n", average_time);
 
-linked_free(list);
 return 0;
 }
